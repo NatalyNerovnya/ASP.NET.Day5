@@ -6,40 +6,53 @@ using System.Threading.Tasks;
 
 namespace Polynomial
 {
-    public class Polynomial : IEquatable<Polynomial>
+    /// <summary>
+    /// Class representation of polynomial
+    /// </summary>
+    public class Polynomial : ICloneable, IEquatable<Polynomial>
     {
         #region Fields
-        private readonly double[] coeff;
+        private readonly double[] coeff = {};
         private int dim;
         #endregion
 
         #region Constructors
-        public Polynomial() { }
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public Polynomial()
+        {
+        }
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="arr">Coefficient from the smallest</param>
         public Polynomial(params double[] arr)
         {
-            if (arr == null)
-                throw new ArgumentNullException();
-
-            dim = arr.Length - 1;
-            coeff = new double[dim + 1];
-            Array.Copy(arr, coeff, dim + 1);
+            if (arr == null) throw new ArgumentNullException();
+            dim = arr.Length;
+            coeff = new double[dim];
+            Array.Copy(arr, coeff, dim);
         }
-
         #endregion
 
-        #region Properties
+        #region Property with parameter
+        /// <summary>
+        /// Indexer
+        /// </summary>
+        /// <param name="i">Degree of variable</param>
+        /// <returns>Coefficient</returns>
         public double this[int i]
         {
             get
             {
-                if (i <= dim)
+                if (i < dim && i >= 0)
                     return coeff[i];
                 throw new IndexOutOfRangeException();
             }
             set
             {
-                if (i <= dim)
+                if (i < dim && i >= 0)
                     coeff[i] = value;
                 else
                     throw new IndexOutOfRangeException();
@@ -47,47 +60,57 @@ namespace Polynomial
         }
         #endregion
 
-        #region Redefined public methods
-
-        public override string ToString()
-        {
-            if (this == null)
-                throw new ArgumentNullException();
-            return ToSrtring("x");
-        }
-
-        public string ToSrtring(string variable)
+        #region Redefinded methods
+        /// <summary>
+        /// String representation
+        /// </summary>
+        /// <param name="variable">Variable</param>
+        /// <returns>String</returns>
+        public string ToString(string variable)
         {
             if (this == null)
                 throw new ArgumentNullException();
             if (variable == null)
                 variable = "x";
 
-            this.DeleteZeros();
-            string result = this[dim + 1].ToString() + " " + variable + "^" + (dim + 1).ToString() + " " ;
-           
-            for (int i = dim; i >= 0; i++)
+            this.DeleteZerosInTheEnd();
+            string result = "";
+            if (this[0] != 0)
+                result = this[0] + " ";
+
+            for (int i = 1; i < dim; i++)
             {
                 if (this[i] != 0)
                 {
                     if (this[i] > 0)
                         result += "+ ";
-                    result += this[i].ToString() + variable + "^" + i.ToString() + " ";
+                    result += $"{this[i]} {variable}^{i} ";
                 }
             }
             result += "= 0";
             return result;
         }
 
+        /// <summary>
+        /// String representation
+        /// </summary>
+        /// <returns>String</returns>
+        public override string ToString()
+        {
+            if (this == null)
+                throw new ArgumentNullException();
+            return ToString("x");
+        }
+
         public bool Equals(Polynomial other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            DeleteZeros();
-            other.DeleteZeros();
+            DeleteZerosInTheEnd();
+            other.DeleteZerosInTheEnd();
             if (other.dim != this.dim) return false;
 
-            for (int i = 0; i <= dim; i++)
+            for (int i = 0; i < dim; i++)
                 if (this[i].CompareTo(other[i]) != 0)
                     return false;
             return true;
@@ -98,21 +121,41 @@ namespace Polynomial
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
             if (obj.GetType() != this.GetType()) return false;
-            return Equals((Polynomial)obj);
+            return Equals((Polynomial) obj);
         }
 
+        /// <summary>
+        /// GetHashCode
+        /// </summary>
+        /// <returns>Hash code</returns>
         public override int GetHashCode()
         {
             unchecked
             {
-                return ((coeff != null ? coeff.GetHashCode() : 0) * 397) ^ dim;
+                return ((coeff != null ? coeff.GetHashCode() : 0)*397) ^ dim;
             }
         }
 
+        public Polynomial Clone()
+        {
+            return new Polynomial(this.coeff);
+        }
 
-        #endregion
+        object ICloneable.Clone()
+        {
+            return Clone();
+        }
+
+#endregion
 
         #region Operators
+
+        /// <summary>
+        /// Compare two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second poynomial</param>
+        /// <returns>True, if polynomials are equal</returns>
         public static bool operator ==(Polynomial pol1, Polynomial pol2)
         {
             if (ReferenceEquals(pol1, pol2)) return true;
@@ -120,38 +163,63 @@ namespace Polynomial
             return pol1.Equals(pol2);
         }
 
+        /// <summary>
+        /// Compare two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second poynomial</param>
+        /// <returns>True, if polynomials aren't equal</returns>
         public static bool operator !=(Polynomial pol1, Polynomial pol2)
         {
-            return !(pol1 == pol2);
+            if (ReferenceEquals(pol1, pol2)) return true;
+            if (ReferenceEquals(pol1, null)) return false;
+            return !pol1.Equals(pol2);
         }
 
+        /// <summary>
+        /// Sum two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second polynomial</param>
+        /// <returns>Sum</returns>
         public static Polynomial operator +(Polynomial pol1, Polynomial pol2)
         {
             if (pol1 == null || pol2 == null)
                 throw new ArgumentNullException();
 
-            pol1.DeleteZeros();
-            pol2.DeleteZeros();
+            pol1.DeleteZerosInTheEnd();
+            pol2.DeleteZerosInTheEnd();
             int d = Math.Min(pol1.dim, pol2.dim);
             var result = pol1.dim >= pol2.dim ? pol1 : pol2;
-            for (int i = 0; i <= d; i++)
+            for (int i = 0; i < d; i++)
             {
                 checked
                 {
                     result[i] = pol1[i] + pol2[i];
-                } 
+                }
             }
-            result.DeleteZeros();
+            result.DeleteZerosInTheEnd();
             return result;
         }
 
+        /// <summary>
+        /// Change sign of polynomial
+        /// </summary>
+        /// <param name="pol">Polynomial</param>
+        /// <returns>Polynomial with other sign</returns>
         public static Polynomial operator -(Polynomial pol)
         {
             if (pol == null)
                 throw new ArgumentNullException();
-            return pol * (-1);
+            return pol*(-1);
         }
 
+        /// <summary>
+        /// Substract two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second polynomial</param>
+        /// <returns>Substraction</returns>
         public static Polynomial operator -(Polynomial pol1, Polynomial pol2)
         {
             if (pol1 == null || pol2 == null)
@@ -159,142 +227,170 @@ namespace Polynomial
             return pol1 + (-pol2);
         }
 
+        /// <summary>
+        /// Multiply polynomial and number
+        /// </summary>
+        /// <param name="pol">Polynomial</param>
+        /// <param name="x">Number</param>
+        /// <returns>Polynomial * Number</returns>
         public static Polynomial operator *(Polynomial pol, double x)
         {
             if (pol == null)
                 throw new ArgumentNullException();
-            if (x == Double.NaN || x == Double.NegativeInfinity || x == Double.PositiveInfinity)
-                throw new ArgumentNullException();
-            
-            for (int i = 0; i <= pol.dim; i++)
+            var result = pol.Clone();
+            for (int i = 0; i < result.dim; i++)
             {
                 checked
                 {
-                    pol[i] *= x;
+                    result[i] *= x;
                 }
             }
-            pol.DeleteZeros();
-            return pol;
+            result.DeleteZerosInTheEnd();
+            return result;
 
         }
 
+        /// <summary>
+        /// Multiply polynomial and number
+        /// </summary>
+        /// <param name="pol">Polynomial</param>
+        /// <param name="x">Number</param>
+        /// <returns>Number * Polynomial</returns>
         public static Polynomial operator *(double x, Polynomial pol)
         {
-            return pol * x;
+            return pol*x;
         }
 
+        /// <summary>
+        /// Multiply two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second polynomial</param>
+        /// <returns>Product of two polynomials</returns>
         public static Polynomial operator *(Polynomial pol1, Polynomial pol2)
         {
             if (pol1 == null || pol2 == null)
                 throw new ArgumentNullException();
 
 
-            int n = pol1.dim + pol2.dim + 2;
+            int n = pol1.dim + pol2.dim;
             double[] prod = new double[n];
-            for (int i = 0; i <= pol1.dim; i++)
+
+            for (int i = 0; i < pol1.dim; i++)
             {
-                for (int j = 0; j <= pol2.dim; j++)
+                for (int j = 0; j < pol2.dim; j++)
                 {
                     prod[i + j] += pol1[i] * pol2[j];
                 }
             }
             Polynomial result = new Polynomial(prod);
-            result.DeleteZeros();
+            result.DeleteZerosInTheEnd();
             return result;
         }
 
-        public static Polynomial operator /(Polynomial pol1, Polynomial pol2)
-        {
-            if (pol1 == null || pol2 == null)
-                throw new ArgumentNullException();
-            if(pol1.dim < pol2.dim)
-                throw new ArgumentException();
-            pol1.coeff.Reverse();
-            pol2.coeff.Reverse();
+        //public static Polynomial operator /(Polynomial pol1, Polynomial pol2)
+        //{
+        //    if (pol1 == null || pol2 == null)
+        //        throw new ArgumentNullException();
+        //    if (pol1.dim < pol2.dim)
+        //        throw new ArgumentException();
 
+        //    double[] quotient = new double[pol1.dim - pol2.dim + 1];
+        //    double[] remainder = (double[])pol1.coeff.Clone();
+        //    for (int i = quotient.Length - 1; i >= 0; i--)
+        //    {
+        //        double coeff = remainder[remainder.Length - i - 1] / pol2.coeff.Last();
+        //        quotient[quotient.Length - i - 1] = coeff;
+        //        for (int j = 0; j < pol2.dim; j++)
+        //        {
+        //            remainder[remainder.Length - i - j - 1] -= coeff * pol2[pol2.dim - j - 1];
+        //        }
+        //    }
 
-            double[] quotient = new double[pol1.dim - pol2.dim + 1];
-            double[] remainder = (double[])pol1.coeff.Clone();
-            for (int i = 0; i < quotient.Length; i++)
-            {
-                double coeff = remainder[remainder.Length - i - 1] / pol2.coeff.Last();
-                quotient[quotient.Length - i - 1] = coeff;
-                for (int j = 0; j <= pol2.dim; j++)
-                {
-                    remainder[remainder.Length - i - j - 1] -= coeff * pol2[pol2.dim - j];
-                }
-            }
+        //    Polynomial result = new Polynomial((double[])quotient.Reverse());
+        //    result.DeleteZerosInTheEnd();
+        //    return result;
+        //}
 
-            Polynomial result = new Polynomial((double[])quotient.Reverse());
-            result.DeleteZeros();
-            return result;
-        }
-
+        /// <summary>
+        /// Change sign of polynomial
+        /// </summary>
+        /// <param name="pol">Polynomial</param>
+        /// <returns>Polynomial with other sign</returns>
         public static Polynomial Negate(Polynomial pol)
         {
             return -pol;
         }
 
+        /// <summary>
+        /// Sum two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second polynomial</param>
+        /// <returns>Sum</returns>
         public static Polynomial Add(Polynomial pol1, Polynomial pol2)
         {
             return pol1 + pol2;
         }
 
+        /// <summary>
+        /// Substract two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second polynomial</param>
+        /// <returns>Substraction</returns>
         public static Polynomial Subtract(Polynomial pol1, Polynomial pol2)
         {
             return pol1 - pol2;
         }
 
+        /// <summary>
+        /// Multiply two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second polynomial</param>
+        /// <returns>Product of two polynomials</returns>
         public static Polynomial Multiply(Polynomial pol1, Polynomial pol2)
         {
-            return pol1 * pol2;
+            return pol1*pol2;
         }
 
+        /// <summary>
+        /// Multiply polynomial and number
+        /// </summary>
+        /// <param name="pol">Polynomial</param>
+        /// <param name="x">Number</param>
+        /// <returns>Polynomial * Number</returns>
         public static Polynomial Multiply(Polynomial pol, double x)
         {
-            return pol * x;
+            return pol*x;
         }
 
-        public static Polynomial Devide(Polynomial pol1, Polynomial pol2)
-        {
-            return pol1 / pol2;
-        }
-
+        /// <summary>
+        /// Multiply polynomial and number
+        /// </summary>
+        /// <param name="pol">Polynomial</param>
+        /// <param name="x">Number</param>
+        /// <returns>Number * Polynomial</returns>
         public static Polynomial Multiply(double x, Polynomial pol)
         {
-            return pol * x;
+            return pol*x;
         }
 
         #endregion
 
-        #region Private methods
-        private void DeleteZeros()
-        {
-            if(this == null)
-                throw new ArgumentNullException();
-            if (dim == 0)
-                return;
-            coeff.Reverse();
-            DeleteZerosInTheEnd();
-            coeff.Reverse();
-            DeleteZerosInTheEnd();
-
-        }
-
+        #region Private Methods
+        /// <summary>
+        /// Delete first zero element near the greatest degree of vaariable
+        /// </summary>
         private void DeleteZerosInTheEnd()
         {
-            if (this == null)
-                throw new ArgumentNullException();
-            if (dim == 0)
-                return;
-            for (int i = dim - 1; i >= 0; i--)
+            for (int i = dim - 1; this[i] == 0; i--)
             {
-                if (this[i] == 0)
-                    dim--;
+                dim--;
             }
         }
-        #endregion
+#endregion
     }
-
-
 }
+
