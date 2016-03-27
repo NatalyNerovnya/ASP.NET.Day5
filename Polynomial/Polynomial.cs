@@ -12,7 +12,7 @@ namespace Polynomial
     public class Polynomial : IEquatable<Polynomial>
     {
         #region Fields
-        private readonly double[] coeff = { };
+        private readonly double[] coeff;
         private int dim;
         #endregion
 
@@ -100,6 +100,11 @@ namespace Polynomial
             if (this == null)
                 throw new ArgumentNullException();
             return ToString("x");
+        }
+
+        bool IEquatable<Polynomial>.Equals(Polynomial other)
+        {
+            return Equals(other);
         }
 
         public bool Equals(Polynomial other)
