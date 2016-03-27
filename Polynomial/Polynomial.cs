@@ -82,7 +82,7 @@ namespace Polynomial
             {
                 if (this[i] != 0)
                 {
-                    if (this[i] > 0)
+                    if (this[i] > 0 && !(i == 1 && this[0] == 0))
                         result += "+ ";
                     result += $"{this[i]} {variable}^{i} ";
                 }
