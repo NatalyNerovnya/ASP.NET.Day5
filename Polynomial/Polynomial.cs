@@ -9,7 +9,7 @@ namespace Polynomial
     /// <summary>
     /// Class representation of polynomial
     /// </summary>
-    public class Polynomial : ICloneable, IEquatable<Polynomial>
+    public class Polynomial : IEquatable<Polynomial>
     {
         #region Fields
         private readonly double[] coeff = { };
@@ -136,16 +136,6 @@ namespace Polynomial
             }
         }
 
-        public Polynomial Clone()
-        {
-            return new Polynomial(this.coeff);
-        }
-
-        object ICloneable.Clone()
-        {
-            return Clone();
-        }
-
         #endregion
 
         #region Operators
@@ -237,7 +227,7 @@ namespace Polynomial
         {
             if (pol == null)
                 throw new ArgumentNullException();
-            var result = pol.Clone();
+            var result = new Polynomial(pol.coeff);
             for (int i = 0; i < result.dim; i++)
             {
                 checked
