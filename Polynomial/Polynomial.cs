@@ -21,9 +21,9 @@ namespace Polynomial
             if (arr == null)
                 throw new ArgumentNullException();
 
-            dim = arr.Length;
-            coeff = new double[dim];
-            Array.Copy(arr, coeff, dim);
+            dim = arr.Length - 1;
+            coeff = new double[dim + 1];
+            Array.Copy(arr, coeff, dim + 1);
         }
 
         #endregion
@@ -33,13 +33,13 @@ namespace Polynomial
         {
             get
             {
-                if (i < dim)
+                if (i <= dim)
                     return coeff[i];
                 throw new IndexOutOfRangeException();
             }
             set
             {
-                if (i < dim)
+                if (i <= dim)
                     coeff[i] = value;
                 else
                     throw new IndexOutOfRangeException();
@@ -63,12 +63,10 @@ namespace Polynomial
             if (variable == null)
                 variable = "x";
 
-            this.DeleteZerosInTheEnd();
-            string result = "";
-            if (this[0] != 0)
-                result = this[0] + " ";
-
-            for (int i = 1; i < dim; i++)
+            this.DeleteZeros();
+            string result = this[dim + 1].ToString() + " " + variable + "^" + (dim + 1).ToString() + " " ;
+           
+            for (int i = dim; i >= 0; i++)
             {
                 if (this[i] != 0)
                 {
@@ -85,11 +83,11 @@ namespace Polynomial
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            DeleteZerosInTheEnd();
-            other.DeleteZerosInTheEnd();
+            DeleteZeros();
+            other.DeleteZeros();
             if (other.dim != this.dim) return false;
 
-            for (int i = 0; i < dim; i++)
+            for (int i = 0; i <= dim; i++)
                 if (this[i].CompareTo(other[i]) != 0)
                     return false;
             return true;
@@ -132,18 +130,18 @@ namespace Polynomial
             if (pol1 == null || pol2 == null)
                 throw new ArgumentNullException();
 
-            pol1.DeleteZerosInTheEnd();
-            pol2.DeleteZerosInTheEnd();
+            pol1.DeleteZeros();
+            pol2.DeleteZeros();
             int d = Math.Min(pol1.dim, pol2.dim);
             var result = pol1.dim >= pol2.dim ? pol1 : pol2;
-            for (int i = 0; i < d; i++)
+            for (int i = 0; i <= d; i++)
             {
                 checked
                 {
                     result[i] = pol1[i] + pol2[i];
                 } 
             }
-            result.DeleteZerosInTheEnd();
+            result.DeleteZeros();
             return result;
         }
 
@@ -168,14 +166,14 @@ namespace Polynomial
             if (x == Double.NaN || x == Double.NegativeInfinity || x == Double.PositiveInfinity)
                 throw new ArgumentNullException();
             
-            for (int i = 0; i < pol.dim; i++)
+            for (int i = 0; i <= pol.dim; i++)
             {
                 checked
                 {
                     pol[i] *= x;
                 }
             }
-            pol.DeleteZerosInTheEnd();
+            pol.DeleteZeros();
             return pol;
 
         }
@@ -191,17 +189,44 @@ namespace Polynomial
                 throw new ArgumentNullException();
 
 
-            int n = pol1.dim + pol2.dim;
+            int n = pol1.dim + pol2.dim + 2;
             double[] prod = new double[n];
-            for (int i = 0; i < pol1.dim; i++)
+            for (int i = 0; i <= pol1.dim; i++)
             {
-                for (int j = 0; j < pol2.dim; j++)
+                for (int j = 0; j <= pol2.dim; j++)
                 {
                     prod[i + j] += pol1[i] * pol2[j];
                 }
             }
             Polynomial result = new Polynomial(prod);
-            result.DeleteZerosInTheEnd();
+            result.DeleteZeros();
+            return result;
+        }
+
+        public static Polynomial operator /(Polynomial pol1, Polynomial pol2)
+        {
+            if (pol1 == null || pol2 == null)
+                throw new ArgumentNullException();
+            if(pol1.dim < pol2.dim)
+                throw new ArgumentException();
+            pol1.coeff.Reverse();
+            pol2.coeff.Reverse();
+
+
+            double[] quotient = new double[pol1.dim - pol2.dim + 1];
+            double[] remainder = (double[])pol1.coeff.Clone();
+            for (int i = 0; i < quotient.Length; i++)
+            {
+                double coeff = remainder[remainder.Length - i - 1] / pol2.coeff.Last();
+                quotient[quotient.Length - i - 1] = coeff;
+                for (int j = 0; j <= pol2.dim; j++)
+                {
+                    remainder[remainder.Length - i - j - 1] -= coeff * pol2[pol2.dim - j];
+                }
+            }
+
+            Polynomial result = new Polynomial((double[])quotient.Reverse());
+            result.DeleteZeros();
             return result;
         }
 
@@ -230,6 +255,11 @@ namespace Polynomial
             return pol * x;
         }
 
+        public static Polynomial Devide(Polynomial pol1, Polynomial pol2)
+        {
+            return pol1 / pol2;
+        }
+
         public static Polynomial Multiply(double x, Polynomial pol)
         {
             return pol * x;
@@ -238,9 +268,22 @@ namespace Polynomial
         #endregion
 
         #region Private methods
-        private void DeleteZerosInTheEnd()
+        private void DeleteZeros()
         {
             if(this == null)
+                throw new ArgumentNullException();
+            if (dim == 0)
+                return;
+            coeff.Reverse();
+            DeleteZerosInTheEnd();
+            coeff.Reverse();
+            DeleteZerosInTheEnd();
+
+        }
+
+        private void DeleteZerosInTheEnd()
+        {
+            if (this == null)
                 throw new ArgumentNullException();
             if (dim == 0)
                 return;
@@ -250,7 +293,7 @@ namespace Polynomial
                     dim--;
             }
         }
-#endregion
+        #endregion
     }
 
 
