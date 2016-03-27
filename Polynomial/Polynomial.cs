@@ -138,7 +138,7 @@ namespace Polynomial
 
         #endregion
 
-        #region Operators
+        #region Operators (symbols)
 
         /// <summary>
         /// Compare two polynomials
@@ -278,36 +278,9 @@ namespace Polynomial
             return result;
         }
 
-        /// <summary>
-        /// Devide two polynomials
-        /// </summary>
-        /// <param name="pol1">First polynomial</param>
-        /// <param name="pol2">Second polynomial</param>
-        /// <returns>Quatient of two polynomials</returns>
-        public static Polynomial operator /(Polynomial pol1, Polynomial pol2)
-        {
-            if (pol1 == null || pol2 == null)
-                throw new ArgumentNullException();
-            if (pol1.dim < pol2.dim)
-                throw new ArgumentException();
+       #endregion
 
-            double[] quotient = new double[pol1.dim - pol2.dim + 1];
-            double[] remainder = (double[])pol1.coeff.Clone();
-            for (int i = 0; i < quotient.Length; i++)
-            {
-                double coeff = remainder[remainder.Length - i - 1] / pol2.coeff.Last();
-                quotient[quotient.Length - i - 1] = coeff;
-                for (int j = 0; j < pol2.dim; j++)
-                {
-                    remainder[remainder.Length - i - j - 1] -= coeff * pol2[pol2.dim - j - 1];
-                }
-            }
-
-            Polynomial result = new Polynomial(quotient);
-            result.DeleteZerosInTheEnd();
-            return result;
-        }
-
+        #region Operators(words)
         /// <summary>
         /// Change sign of polynomial
         /// </summary>
@@ -371,17 +344,6 @@ namespace Polynomial
         public static Polynomial Multiply(double x, Polynomial pol)
         {
             return pol * x;
-        }
-
-        /// <summary>
-        /// Devide two polynomials
-        /// </summary>
-        /// <param name="pol1">First polynomial</param>
-        /// <param name="pol2">Second polynomial</param>
-        /// <returns>Quatient of two polynomials</returns>
-        public static Polynomial Devide(Polynomial pol1, Polynomial pol2)
-        {
-            return pol1 / pol2;
         }
 
         #endregion
