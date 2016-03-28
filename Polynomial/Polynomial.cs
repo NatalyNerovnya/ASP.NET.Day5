@@ -283,7 +283,34 @@ namespace Polynomial
             return result;
         }
 
-       #endregion
+        /// <summary>
+        /// Divide two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second polynomial</param>
+        /// <returns>Quatient of two polynomials</returns>
+        public static Polynomial operator /(Polynomial pol1, Polynomial pol2)
+        {
+            if (pol1 == null || pol2 == null)
+                throw new ArgumentNullException();
+
+            return Division(pol1,pol2,true);
+        }
+
+        /// <summary>
+        /// Divide two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second polynomial</param>
+        /// <returns>Mod of two polynomials</returns>
+        public static Polynomial operator %(Polynomial pol1, Polynomial pol2)
+        {
+            if (pol1 == null || pol2 == null)
+                throw new ArgumentNullException();
+
+            return Division(pol1, pol2, false);
+        }
+        #endregion
 
         #region Operators(words)
         /// <summary>
@@ -351,6 +378,28 @@ namespace Polynomial
             return pol * x;
         }
 
+        /// <summary>
+        /// Divide two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second polynomial</param>
+        /// <returns>Quotient of two polynomials</returns>
+        public static Polynomial Divide(Polynomial pol1, Polynomial pol2)
+        {
+            return pol1 / pol2;
+        }
+
+        /// <summary>
+        /// Divide two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second polynomial</param>
+        /// <returns>Mod of two polynomials</returns>
+        public static Polynomial Mod(Polynomial pol1, Polynomial pol2)
+        {
+            return pol1 % pol2;
+        }
+
         #endregion
 
         #region Private Methods
@@ -363,6 +412,39 @@ namespace Polynomial
             {
                 dim--;
             }
+        }
+
+        /// <summary>
+        /// Algorythm of division
+        /// </summary>
+        /// <param name="pol1">First polynom</param>
+        /// <param name="pol2">Second polynom</param>
+        /// <param name="flag">True, if you want quotient, false - mod</param>
+        /// <returns>Quotient or mod</returns>
+        private static Polynomial Division(Polynomial pol1, Polynomial pol2, bool flag)
+        {
+            if (pol1.dim < pol2.dim)
+                throw new ArgumentException();
+
+            double[] quotient = new double[pol1.dim - pol2.dim + 1];
+            double[] remainder = (double[])pol1.coeff.Clone();
+            for (int i = 0; i < quotient.Length; i++)
+            {
+                double coeff = remainder[remainder.Length - i - 1] / pol2.coeff.Last();
+                quotient[quotient.Length - i - 1] = coeff;
+                for (int j = 0; j < pol2.dim; j++)
+                {
+                    remainder[remainder.Length - i - j - 1] -= coeff * pol2[pol2.dim - j - 1];
+                }
+            }
+            Polynomial result;
+            if (flag == true)
+                result = new Polynomial(quotient);
+            else
+                result = new Polynomial(remainder);
+            result.DeleteZerosInTheEnd();
+
+            return result;
         }
         #endregion
     }
