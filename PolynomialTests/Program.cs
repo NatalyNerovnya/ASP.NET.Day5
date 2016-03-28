@@ -23,6 +23,8 @@ namespace PolynomialTests
             Console.WriteLine("pol1 * pol2 : " + pol4.ToString());
             Polynomial.Polynomial pol5 = pol2 / pol;
             Console.WriteLine("pol1 / pol2 : " + pol5.ToString());
+            Polynomial.Polynomial pol6 = pol2 % pol;
+            Console.WriteLine("pol1 % pol2 : " + pol6.ToString());
             Console.ReadKey();
         }
     }
