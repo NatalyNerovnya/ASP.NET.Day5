@@ -12,7 +12,7 @@ namespace Polynomial
     public class Polynomial : IEquatable<Polynomial>
     {
         #region Fields
-        private readonly double[] coeff;
+        private readonly double[] coeff = {};
         private int dim;
         #endregion
 
