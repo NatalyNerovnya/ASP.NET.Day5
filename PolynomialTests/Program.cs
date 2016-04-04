@@ -15,6 +15,7 @@ namespace PolynomialTests
         {
             Polynomial.Polynomial pol = new Polynomial.Polynomial(3, 0, 2);
             Polynomial.Polynomial pol2 = new Polynomial.Polynomial(0, 1, 5, 6);
+            Console.WriteLine("Calculate pol1 in 2 = " + pol.Calculate(2).ToString());
             Console.WriteLine("pol1 : " + pol.ToString());
             Console.WriteLine("pol2: " + pol2.ToString());
             Polynomial.Polynomial pol3 = pol2 - pol;
