@@ -197,6 +197,108 @@ namespace Polynomial
         /// <returns>Sum</returns>
         public static Polynomial operator +(Polynomial pol1, Polynomial pol2)
         {
+            return pol1 + pol2;
+        }
+
+        /// <summary>
+        /// Change sign of polynomial
+        /// </summary>
+        /// <param name="pol">Polynomial</param>
+        /// <returns>Polynomial with other sign</returns>
+        public static Polynomial operator -(Polynomial pol)
+        {
+            return -pol;
+        }
+
+        /// <summary>
+        /// Substract two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second polynomial</param>
+        /// <returns>Substraction</returns>
+        public static Polynomial operator -(Polynomial pol1, Polynomial pol2)
+        {
+            return pol1 - pol2;
+        }
+
+        /// <summary>
+        /// Multiply polynomial and number
+        /// </summary>
+        /// <param name="pol">Polynomial</param>
+        /// <param name="x">Number</param>
+        /// <returns>Polynomial * Number</returns>
+        public static Polynomial operator *(Polynomial pol, double x)
+        {
+            return pol * x;
+        }
+
+        /// <summary>
+        /// Multiply polynomial and number
+        /// </summary>
+        /// <param name="pol">Polynomial</param>
+        /// <param name="x">Number</param>
+        /// <returns>Number * Polynomial</returns>
+        public static Polynomial operator *(double x, Polynomial pol)
+        {
+            return pol * x;
+        }
+
+        /// <summary>
+        /// Multiply two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second polynomial</param>
+        /// <returns>Product of two polynomials</returns>
+        public static Polynomial operator *(Polynomial pol1, Polynomial pol2)
+        {
+            return pol1 * pol2;
+        }
+
+        /// <summary>
+        /// Divide two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second polynomial</param>
+        /// <returns>Quatient of two polynomials</returns>
+        public static Polynomial operator /(Polynomial pol1, Polynomial pol2)
+        {
+            return pol1 / pol2;
+        }
+
+        /// <summary>
+        /// Divide two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second polynomial</param>
+        /// <returns>Mod of two polynomials</returns>
+        public static Polynomial operator %(Polynomial pol1, Polynomial pol2)
+        {
+            return pol1 % pol2;
+        }
+        #endregion
+
+        #region Operators(words)
+        /// <summary>
+        /// Change sign of polynomial
+        /// </summary>
+        /// <param name="pol">Polynomial</param>
+        /// <returns>Polynomial with other sign</returns>
+        public static Polynomial Negate(Polynomial pol)
+        {
+            if (pol == null)
+                throw new ArgumentNullException();
+            return pol * (-1);
+
+        }
+
+        /// <summary>
+        /// Sum two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second polynomial</param>
+        /// <returns>Sum</returns>
+        public static Polynomial Add(Polynomial pol1, Polynomial pol2)
+        {
             if (pol1 == null || pol2 == null)
                 throw new ArgumentNullException();
 
@@ -216,28 +318,43 @@ namespace Polynomial
         }
 
         /// <summary>
-        /// Change sign of polynomial
-        /// </summary>
-        /// <param name="pol">Polynomial</param>
-        /// <returns>Polynomial with other sign</returns>
-        public static Polynomial operator -(Polynomial pol)
-        {
-            if (pol == null)
-                throw new ArgumentNullException();
-            return pol * (-1);
-        }
-
-        /// <summary>
         /// Substract two polynomials
         /// </summary>
         /// <param name="pol1">First polynomial</param>
         /// <param name="pol2">Second polynomial</param>
         /// <returns>Substraction</returns>
-        public static Polynomial operator -(Polynomial pol1, Polynomial pol2)
+        public static Polynomial Subtract(Polynomial pol1, Polynomial pol2)
         {
             if (pol1 == null || pol2 == null)
                 throw new ArgumentNullException();
             return pol1 + (-pol2);
+        }
+
+        /// <summary>
+        /// Multiply two polynomials
+        /// </summary>
+        /// <param name="pol1">First polynomial</param>
+        /// <param name="pol2">Second polynomial</param>
+        /// <returns>Product of two polynomials</returns>
+        public static Polynomial Multiply(Polynomial pol1, Polynomial pol2)
+        {
+            if (pol1 == null || pol2 == null)
+                throw new ArgumentNullException();
+
+
+            int n = pol1.dim + pol2.dim;
+            double[] prod = new double[n];
+
+            for (int i = 0; i < pol1.dim; i++)
+            {
+                for (int j = 0; j < pol2.dim; j++)
+                {
+                    prod[i + j] += pol1[i] * pol2[j];
+                }
+            }
+            Polynomial result = new Polynomial(prod);
+            result.DeleteZerosInTheEnd();
+            return result;
         }
 
         /// <summary>
@@ -246,7 +363,7 @@ namespace Polynomial
         /// <param name="pol">Polynomial</param>
         /// <param name="x">Number</param>
         /// <returns>Polynomial * Number</returns>
-        public static Polynomial operator *(Polynomial pol, double x)
+        public static Polynomial Multiply(Polynomial pol, double x)
         {
             if (pol == null)
                 throw new ArgumentNullException();
@@ -269,128 +386,6 @@ namespace Polynomial
         /// <param name="pol">Polynomial</param>
         /// <param name="x">Number</param>
         /// <returns>Number * Polynomial</returns>
-        public static Polynomial operator *(double x, Polynomial pol)
-        {
-            return pol * x;
-        }
-
-        /// <summary>
-        /// Multiply two polynomials
-        /// </summary>
-        /// <param name="pol1">First polynomial</param>
-        /// <param name="pol2">Second polynomial</param>
-        /// <returns>Product of two polynomials</returns>
-        public static Polynomial operator *(Polynomial pol1, Polynomial pol2)
-        {
-            if (pol1 == null || pol2 == null)
-                throw new ArgumentNullException();
-
-
-            int n = pol1.dim + pol2.dim;
-            double[] prod = new double[n];
-
-            for (int i = 0; i < pol1.dim; i++)
-            {
-                for (int j = 0; j < pol2.dim; j++)
-                {
-                    prod[i + j] += pol1[i] * pol2[j];
-                }
-            }
-            Polynomial result = new Polynomial(prod);
-            result.DeleteZerosInTheEnd();
-            return result;
-        }
-
-        /// <summary>
-        /// Divide two polynomials
-        /// </summary>
-        /// <param name="pol1">First polynomial</param>
-        /// <param name="pol2">Second polynomial</param>
-        /// <returns>Quatient of two polynomials</returns>
-        public static Polynomial operator /(Polynomial pol1, Polynomial pol2)
-        {
-            if (pol1 == null || pol2 == null)
-                throw new ArgumentNullException();
-
-            return Division(pol1,pol2,true);
-        }
-
-        /// <summary>
-        /// Divide two polynomials
-        /// </summary>
-        /// <param name="pol1">First polynomial</param>
-        /// <param name="pol2">Second polynomial</param>
-        /// <returns>Mod of two polynomials</returns>
-        public static Polynomial operator %(Polynomial pol1, Polynomial pol2)
-        {
-            if (pol1 == null || pol2 == null)
-                throw new ArgumentNullException();
-
-            return Division(pol1, pol2, false);
-        }
-        #endregion
-
-        #region Operators(words)
-        /// <summary>
-        /// Change sign of polynomial
-        /// </summary>
-        /// <param name="pol">Polynomial</param>
-        /// <returns>Polynomial with other sign</returns>
-        public static Polynomial Negate(Polynomial pol)
-        {
-            return -pol;
-        }
-
-        /// <summary>
-        /// Sum two polynomials
-        /// </summary>
-        /// <param name="pol1">First polynomial</param>
-        /// <param name="pol2">Second polynomial</param>
-        /// <returns>Sum</returns>
-        public static Polynomial Add(Polynomial pol1, Polynomial pol2)
-        {
-            return pol1 + pol2;
-        }
-
-        /// <summary>
-        /// Substract two polynomials
-        /// </summary>
-        /// <param name="pol1">First polynomial</param>
-        /// <param name="pol2">Second polynomial</param>
-        /// <returns>Substraction</returns>
-        public static Polynomial Subtract(Polynomial pol1, Polynomial pol2)
-        {
-            return pol1 - pol2;
-        }
-
-        /// <summary>
-        /// Multiply two polynomials
-        /// </summary>
-        /// <param name="pol1">First polynomial</param>
-        /// <param name="pol2">Second polynomial</param>
-        /// <returns>Product of two polynomials</returns>
-        public static Polynomial Multiply(Polynomial pol1, Polynomial pol2)
-        {
-            return pol1 * pol2;
-        }
-
-        /// <summary>
-        /// Multiply polynomial and number
-        /// </summary>
-        /// <param name="pol">Polynomial</param>
-        /// <param name="x">Number</param>
-        /// <returns>Polynomial * Number</returns>
-        public static Polynomial Multiply(Polynomial pol, double x)
-        {
-            return pol * x;
-        }
-
-        /// <summary>
-        /// Multiply polynomial and number
-        /// </summary>
-        /// <param name="pol">Polynomial</param>
-        /// <param name="x">Number</param>
-        /// <returns>Number * Polynomial</returns>
         public static Polynomial Multiply(double x, Polynomial pol)
         {
             return pol * x;
@@ -404,7 +399,10 @@ namespace Polynomial
         /// <returns>Quotient of two polynomials</returns>
         public static Polynomial Divide(Polynomial pol1, Polynomial pol2)
         {
-            return pol1 / pol2;
+            if (pol1 == null || pol2 == null)
+                throw new ArgumentNullException();
+
+            return Division(pol1, pol2, true);
         }
 
         /// <summary>
@@ -415,7 +413,10 @@ namespace Polynomial
         /// <returns>Mod of two polynomials</returns>
         public static Polynomial Mod(Polynomial pol1, Polynomial pol2)
         {
-            return pol1 % pol2;
+            if (pol1 == null || pol2 == null)
+                throw new ArgumentNullException();
+
+            return Division(pol1, pol2, false);
         }
 
         #endregion
