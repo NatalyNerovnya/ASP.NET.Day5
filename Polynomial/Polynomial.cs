@@ -60,6 +60,24 @@ namespace Polynomial
         }
         #endregion
 
+        #region Public methods
+
+        public double Calculate(double x)
+        {
+            if(x == Double.NaN || x == Double.PositiveInfinity || x == Double.NegativeInfinity)
+                throw new ArgumentException();
+            if (ReferenceEquals(this, null))
+                throw new ArgumentNullException();
+
+            double result = 0;
+            for (int i = 0; i < dim; i++)
+            {
+                result += this[i] * Math.Pow(x, i);
+            }
+            return result;
+        }
+#endregion
+
         #region Redefinded methods
         /// <summary>
         /// String representation
