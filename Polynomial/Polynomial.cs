@@ -197,7 +197,7 @@ namespace Polynomial
         /// <returns>Sum</returns>
         public static Polynomial operator +(Polynomial pol1, Polynomial pol2)
         {
-            return pol1 + pol2;
+            return Add(pol1, pol2);
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace Polynomial
         /// <returns>Polynomial with other sign</returns>
         public static Polynomial operator -(Polynomial pol)
         {
-            return -pol;
+            return Negate(pol);
         }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace Polynomial
         /// <returns>Substraction</returns>
         public static Polynomial operator -(Polynomial pol1, Polynomial pol2)
         {
-            return pol1 - pol2;
+            return Subtract(pol1, pol2);
         }
 
         /// <summary>
@@ -229,7 +229,7 @@ namespace Polynomial
         /// <returns>Polynomial * Number</returns>
         public static Polynomial operator *(Polynomial pol, double x)
         {
-            return pol * x;
+            return Multiply(pol, x);
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace Polynomial
         /// <returns>Number * Polynomial</returns>
         public static Polynomial operator *(double x, Polynomial pol)
         {
-            return pol * x;
+            return Multiply(pol, x);
         }
 
         /// <summary>
@@ -251,7 +251,7 @@ namespace Polynomial
         /// <returns>Product of two polynomials</returns>
         public static Polynomial operator *(Polynomial pol1, Polynomial pol2)
         {
-            return pol1 * pol2;
+            return Multiply(pol1, pol2);
         }
 
         /// <summary>
@@ -262,7 +262,7 @@ namespace Polynomial
         /// <returns>Quatient of two polynomials</returns>
         public static Polynomial operator /(Polynomial pol1, Polynomial pol2)
         {
-            return pol1 / pol2;
+            return Divide(pol1, pol2);
         }
 
         /// <summary>
@@ -273,7 +273,7 @@ namespace Polynomial
         /// <returns>Mod of two polynomials</returns>
         public static Polynomial operator %(Polynomial pol1, Polynomial pol2)
         {
-            return pol1 % pol2;
+            return Mod(pol1, pol2);
         }
         #endregion
 
